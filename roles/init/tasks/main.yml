@@ -1,3 +1,6 @@
+#--------------------------------------------------------------#
+# 1. Name                                            [node_name]
+#--------------------------------------------------------------#
 - name: Node identity
   tags: [ always, node_id ]
   block:
@@ -74,9 +77,6 @@
           node_cluster: {{ node_cluster }},
           spec: c{{ node_cpu }}m{{ node_mem_gb }}, os: {{ os_vendor }}.{{ os_version }}.{{ os_arch }} {{ node_os_code }}:{{ os_package }}
 
-    #--------------------------------------------------------------#
-    # 1. Name                                            [node_name]
-    #--------------------------------------------------------------#
     - name: Set hostname to nodename
       tags: node_name
       when: nodename_overwrite|bool and nodename is defined and nodename != '' and node_hostname != nodename
@@ -99,14 +99,8 @@
           debug:
             msg: "Hostname updated to {{ nodename }}. Reboot recommended to fully apply changes."
 
-        # - name: set hostname temporarily
-        #   ansible.builtin.command: hostnamectl set-hostname {{ nodename }}
-        #   changed_when: false
-        # - name: update etc hosts
-        #   ansible.builtin.lineinfile:
-        #     path: /etc/hosts
-        #     regexp: '^127\.0\.0\.1\s+'
-        #     line: "127.0.0.1 {{ nodename }} localhost localhost.localdomain"
-        #     owner: root
-        #     group: root
-        #     mode: '0644'
+#--------------------------------------------------------------#
+# 2. Hosts & Resolv                    [node_hosts, node_resolv]
+#--------------------------------------------------------------#
+# node_hosts , node_resolv
+- import_tasks: dns.yml
