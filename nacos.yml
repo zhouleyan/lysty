@@ -1,0 +1,9 @@
+#!/usr/bin/env ansible-playbook
+
+- name: NACOS INIT
+  become: yes
+  hosts: all
+  gather_facts: no
+  tags: init
+  roles:
+    - { role: init }
