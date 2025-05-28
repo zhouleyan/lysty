@@ -2,23 +2,23 @@
 #--------------------------------------------------------------#
 # Setup Node Static DNS Records                     [node_hosts]
 #--------------------------------------------------------------#
-- name: setup node dns
+- name: Setup node dns
   tags: node_hosts
   when: node_write_etc_hosts|bool
   block:
 
     # NOTE: dns records suffixed with "# lysty meta" will be treated as meta node dns record and been wiped
-    - name: wipe lysty dns entries
+    - name: Wipe lysty dns entries
       lineinfile: path=/etc/hosts regexp='# lysty dns$' state=absent
 
     # NOTE: dns records write by lysty will be suffixed with "# lysty meta" mark
-    - name: write static etc hosts entry
+    - name: Write static etc hosts entry
       lineinfile:
         path: /etc/hosts
         line: "{{ item | replace('${admin_ip}', admin_ip) }} # lysty dns"
       with_items: "{{ node_default_etc_hosts|default([]) + node_etc_hosts|default([]) }}"
 
-    - name: exchange nodename between nodes
+    - name: Exchange nodename between nodes
       when: nodename_exchange|bool
       ignore_errors: true
       lineinfile:
@@ -33,19 +33,19 @@
 # Setup Node DNS Resolver                             [node_dns]
 #--------------------------------------------------------------#
 # add static nameserver to resolv (if node_dns_method != 'none')
-- name: setup node dns resolver
+- name: Setup node dns resolver
   tags: node_resolv
   when: node_dns_method is defined and node_dns_method != 'none'
   block:
 
     # add new nameservers to existing nameservers
-    - name: get existing etc resolv
+    - name: Get existing etc resolv
       when: node_dns_method == 'add'
       shell: grep -E '^nameserver' /etc/resolv.conf  | grep -Eo '[0-9\.]+' | head -n3
       args: { executable: /bin/bash }
       register: old_nameservers
 
-    - name: generate etc resolv conf
+    - name: Generate etc resolv conf
       copy:
         dest: /etc/resolv.conf
         mode: 0644
