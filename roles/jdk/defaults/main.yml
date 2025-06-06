@@ -1,0 +1,6 @@
+# 离线安装包路径（如果使用离线安装）
+offline_java_package: ""
+# 离线安装包解压目录
+offline_install_dir: "/opt/java"
+# 是否强制重新安装
+force_install: false

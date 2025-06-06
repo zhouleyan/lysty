@@ -2,6 +2,14 @@ all:
   children:
     nacos:
       hosts:
+        nacos3:
+          ansible_host: 10.1.1.32
+          instances:
+            - instance_id: 1
+              server_port: 8848
+              jetty_port: 9848
+    nodes:
+      hosts:
         nacos1:
           ansible_host: 10.1.1.30
           instances:
@@ -16,13 +24,7 @@ all:
           instances:
             - instance_id: 1
               server_port: 8848
-              jetty_port: 9848
-        nacos3:
-          ansible_host: 10.1.1.32
-          instances:
-            - instance_id: 1
-              server_port: 8848
-              jetty_port: 9848
+              jetty_port: 9848 
       vars:
         nacos_cluster_nodes:
           - "10.1.1.30:8848"

@@ -1,0 +1,14 @@
+#--------------------------------------------------------------#
+# 1. Check
+#--------------------------------------------------------------#
+- name: Check if jdk exists
+  tags: jdk
+  shell: java -version 2>&1 | grep version
+  register: java_version
+  ignore_errors: true
+  changed_when: false
+
+- name: Debug java exists
+  debug:
+    msg: "{{ java_version }}"
+
