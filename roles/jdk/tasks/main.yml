@@ -1,14 +1,17 @@
-#--------------------------------------------------------------#
-# 1. Check
-#--------------------------------------------------------------#
-- name: Check if jdk exists
+- name: Check if java exists
   tags: jdk
   shell: java -version 2>&1 | grep version
   register: java_version
   ignore_errors: true
   changed_when: false
 
-- name: Debug java exists
-  debug:
-    msg: "{{ java_version }}"
+- name: Check Java version is 17
+  set_fact:
+    java_17_installed: "{{ 'openjdk version \"17' in java_version.stdout or 'java version \"17' in java_version.stdout }}"
 
+- name: Install JDK 17
+  become: true
+  tags: jdk
+  environment: "{{ proxy_env | default({}) }}"
+  package: name="{% if os_package|default('rpm') == 'deb' %}openjdk-17-jdk{% else %}java-17-openjdk-devel{% endif %}"
+  when: not java_17_installed

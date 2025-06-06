@@ -8,18 +8,18 @@
   roles:
     - { role: id }
 
-- name: NODE INIT
-  become: yes
-  hosts: all
-  gather_facts: no
-  tags: init
-  roles:
-    - { role: init }
+# - name: NODE INIT
+#   become: yes
+#   hosts: all
+#   gather_facts: no
+#   tags: init
+#   roles:
+#     - { role: init }
 
 - name: JDK INSTALL
   become: yes
   hosts: nacos
-  gather_facts: true
+  gather_facts: no
   tags: jdk
   roles:
     - { role: jdk }
