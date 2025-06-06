@@ -5,9 +5,16 @@
   tags: node_kernel
   block:
 
+    - name: Check if kernel modules are loaded
+      command: lsmod
+      register: lsmod_output
+      changed_when: false  # 不标记为变更
+
     - name: Enable kernel module
       modprobe: name={{ item }} state=present
       with_items: "{{ node_kernel_modules }}"
+      when: "item not in lsmod_output.stdout"
+      register: kernel_module_changed
 
     - name: Enable kernel module on system boot
       copy:
@@ -30,6 +37,7 @@
           ipt_rpfilter
           ipt_REJECT
           ipip
+      register: kernel_module_on_boot_changed
 
     - name: Active systemd modules load service
       ansible.builtin.systemd:
@@ -85,6 +93,7 @@
           kernel.pid_max                                           = 65535
           kernel.watchdog_thresh                                   = 5
           kernel.hung_task_timeout_secs                            = 5
+      register: kernel_changed
 
     - name: Activate tuned kernel specs
       tags: node_tune_active
@@ -94,28 +103,9 @@
       args: { executable: /bin/bash }
 
     - name: Tuned the limits
-      copy:
-        dest: /etc/security/limits.d/10-lysty.conf
-        owner: root
-        group: root
-        mode: '0644'
-        content: |
-          root soft nofile    1048576
-          root hard nofile    1048576
-          root soft nproc     65536
-          root hard nproc     65536
-          root soft memlock   unlimited
-          root hard memlock   unlimited
-          root soft core      unlimited
-          root hard core      unlimited
-          *    soft nofile    1048576
-          *    hard nofile    1048576
-          *    soft nproc     65536
-          *    hard nproc     65536
-          *    soft memlock   unlimited
-          *    hard memlock   unlimited
-          *    soft core      unlimited
-          *    hard core      unlimited
+      tags: node_ulimit
+      copy: src=limits.conf dest=/etc/security/limits.d/limits.conf mode=0644
+      register: limits_changed
 
     - name: Clean cache
       ignore_errors: true
