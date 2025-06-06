@@ -17,6 +17,12 @@ all:
             - instance_id: 1
               server_port: 8848
               jetty_port: 9848
+        nacos3:
+          ansible_host: 10.1.1.32
+          instances:
+            - instance_id: 1
+              server_port: 8848
+              jetty_port: 9848
       vars:
         nacos_cluster_nodes:
           - "10.1.1.30:8848"

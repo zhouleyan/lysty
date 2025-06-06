@@ -79,6 +79,7 @@
 
     - name: Set hostname to nodename
       tags: node_name
+      become: yes
       when: nodename_overwrite|bool and nodename is defined and nodename != '' and node_hostname != nodename
       block:
         - name: Add new hostname to /etc/hosts (IPv4)
